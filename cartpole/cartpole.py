@@ -76,11 +76,23 @@ class DQN(nn.Module):
         self.bn3 = nn.BatchNorm2d(32)
         self.head = nn.Linear(448, 2)
 
+
     def forward(self, x):
-        x = F.relu(self.bn1(self.conv1(x)))
-        x = F.relu(self.bn2(self.conv2(x)))
-        x = F.relu(self.bn3(self.conv3(x)))
-        return self.head(x.view(x.size(0), -1))
+        
+        x = self.conv1(x)
+        x = self.bn1(x)
+        x = F.relu(x)
+
+        x = self.conv2(x)
+        x = self.bn2(x)
+        x = F.relu(x)
+        
+        x = self.conv3(x)
+        x = self.bn3(x)
+        x = F.relu(x)
+        
+        x = x.view(x.size(0), -1)
+        return self.head(x)
 
 #
 # Input extraction
@@ -101,8 +113,11 @@ def get_cart_location():
 
 
 def get_screen():
-    screen = env.render(mode='rgb_array').transpose(
-        (2, 0, 1))  # transpose into torch order (CHW)
+    """
+    Render environment and capture it and return as Tensor
+    """
+    # transpose into torch order (CHW)
+    screen = env.render(mode='rgb_array').transpose((2, 0, 1))
     # Strip off the top and bottom of the screen
     screen = screen[:, 160:320]
     view_width = 320
@@ -121,13 +136,14 @@ def get_screen():
     screen = np.ascontiguousarray(screen, dtype=np.float32) / 255
     screen = torch.from_numpy(screen)
     # Resize, and add a batch dimension (BCHW)
-    return resize(screen).unsqueeze(0).type(Tensor)
+    return resize(screen).\
+            unsqueeze(0).\
+            type(Tensor)
 
 
 env.reset()
 plt.figure()
-plt.imshow(get_screen().cpu().squeeze(0).permute(1, 2, 0).numpy(),
-           interpolation='none')
+plt.imshow(get_screen().cpu().squeeze(0).permute(1, 2, 0).numpy(), interpolation='none')
 plt.title('Example extracted screen')
 plt.show()
 
@@ -239,7 +255,7 @@ def optimize_model():
     optimizer.step()
 
 
-num_episodes = 50
+num_episodes = 5000
 for i_episode in range(num_episodes):
     # Initialize the environment and state
     env.reset()
