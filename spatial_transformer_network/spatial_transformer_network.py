@@ -1,3 +1,11 @@
+"""
+
+	Spatial Transformer Networks; STN
+
+	https://arxiv.org/pdf/1506.02025.pdf
+
+"""
+
 from __future__ import print_function
 
 import matplotlib.pyplot as plt
