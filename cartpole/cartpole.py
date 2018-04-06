@@ -74,7 +74,7 @@ class DQN(nn.Module):
         self.bn2 = nn.BatchNorm2d(32)
         self.conv3 = nn.Conv2d(32, 32, kernel_size=5, stride=2)
         self.bn3 = nn.BatchNorm2d(32)
-        self.head = nn.Linear(448, 2)
+        self.fc1 = nn.Linear(448, 2)
 
 
     def forward(self, x):
@@ -92,7 +92,7 @@ class DQN(nn.Module):
         x = F.relu(x)
         
         x = x.view(x.size(0), -1)
-        return self.head(x)
+        return self.fc(x)
 
 #
 # Input extraction
