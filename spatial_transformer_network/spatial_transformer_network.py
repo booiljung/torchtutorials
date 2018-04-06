@@ -4,6 +4,8 @@
 
 	https://arxiv.org/pdf/1506.02025.pdf
 
+    PyTorch Implementation
+
 """
 
 from __future__ import print_function
